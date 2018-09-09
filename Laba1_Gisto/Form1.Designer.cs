@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.imagePathBox = new System.Windows.Forms.TextBox();
             this.browseButton = new System.Windows.Forms.Button();
             this.originalImage = new System.Windows.Forms.PictureBox();
@@ -40,6 +40,7 @@
             this.changedImageBox = new System.Windows.Forms.PictureBox();
             this.filteredImage = new System.Windows.Forms.PictureBox();
             this.filteredHisto = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.power = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.originalImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.changedImageBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.filteredImage)).BeginInit();
@@ -101,31 +102,39 @@
             // 
             // filteredHisto
             // 
-            chartArea3.Name = "ChartArea1";
-            this.filteredHisto.ChartAreas.Add(chartArea3);
-            legend3.Name = "Legend1";
-            this.filteredHisto.Legends.Add(legend3);
+            chartArea1.Name = "ChartArea1";
+            this.filteredHisto.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.filteredHisto.Legends.Add(legend1);
             this.filteredHisto.Location = new System.Drawing.Point(742, 512);
             this.filteredHisto.Name = "filteredHisto";
-            series7.ChartArea = "ChartArea1";
-            series7.Color = System.Drawing.Color.Red;
-            series7.Legend = "Legend1";
-            series7.LegendText = "R";
-            series7.Name = "R";
-            series8.ChartArea = "ChartArea1";
-            series8.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            series8.Legend = "Legend1";
-            series8.Name = "G";
-            series9.ChartArea = "ChartArea1";
-            series9.Color = System.Drawing.Color.Blue;
-            series9.Legend = "Legend1";
-            series9.Name = "B";
-            this.filteredHisto.Series.Add(series7);
-            this.filteredHisto.Series.Add(series8);
-            this.filteredHisto.Series.Add(series9);
+            series1.ChartArea = "ChartArea1";
+            series1.Color = System.Drawing.Color.Red;
+            series1.Legend = "Legend1";
+            series1.LegendText = "R";
+            series1.Name = "R";
+            series2.ChartArea = "ChartArea1";
+            series2.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            series2.Legend = "Legend1";
+            series2.Name = "G";
+            series3.ChartArea = "ChartArea1";
+            series3.Color = System.Drawing.Color.Blue;
+            series3.Legend = "Legend1";
+            series3.Name = "B";
+            this.filteredHisto.Series.Add(series1);
+            this.filteredHisto.Series.Add(series2);
+            this.filteredHisto.Series.Add(series3);
             this.filteredHisto.Size = new System.Drawing.Size(700, 393);
             this.filteredHisto.TabIndex = 14;
             this.filteredHisto.Text = "chart1";
+            // 
+            // power
+            // 
+            this.power.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.power.Location = new System.Drawing.Point(672, 12);
+            this.power.Name = "power";
+            this.power.Size = new System.Drawing.Size(100, 34);
+            this.power.TabIndex = 15;
             // 
             // Form1
             // 
@@ -133,6 +142,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(1507, 891);
+            this.Controls.Add(this.power);
             this.Controls.Add(this.filteredHisto);
             this.Controls.Add(this.filteredImage);
             this.Controls.Add(this.changedImageBox);
@@ -162,6 +172,7 @@
         private System.Windows.Forms.PictureBox changedImageBox;
         private System.Windows.Forms.PictureBox filteredImage;
         private System.Windows.Forms.DataVisualization.Charting.Chart filteredHisto;
+        private System.Windows.Forms.TextBox power;
     }
 }
 

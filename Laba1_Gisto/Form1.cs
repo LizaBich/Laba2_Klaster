@@ -41,21 +41,14 @@ namespace Laba2_Klaster
 
         private void processButton_Click(object sender, EventArgs e)
         {
-            try
-            {
-                var changedImage = this._imageProcessor.ConvertToShadowsOfGray(this._image);
-                var temporary = this._imageProcessor.MinMaxFilter(changedImage);
-                this.changedImageBox.Image = temporary;
-                // this.DrawHisto(this._imageProcessor.Calculate(changedImage), this.changedHisto);
+            var p = power.Text == string.Empty ? 4 : Convert.ToInt32(power.Text);
+            var changedImage = this._imageProcessor.ConvertToShadowsOfGray(this._image);
+            changedImage = this._imageProcessor.MinMaxFilter(changedImage, p);
+            changedImage = this._imageProcessor.CreateBitImage(changedImage);
+            this.changedImageBox.Image = changedImage;
 
-                var filteredImage = this._imageProcessor.CreateBitImage(temporary);
-                this.filteredImage.Image = filteredImage;
-                // this.DrawHisto(this._imageProcessor.Calculate(filteredImage), this.filteredHisto);
-            }
-            catch (FormatException)
-            {
-                MessageBox.Show(this, "Constant value is invalid!");
-            }
+            var filteredImage = this._imageProcessor.CleanFromNoise(changedImage, 0);
+            this.filteredImage.Image = filteredImage;
         }
 
         private void LoadImage()

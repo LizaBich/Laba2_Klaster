@@ -99,12 +99,12 @@ namespace Laba2_Klaster.ImageProcessing
         {
             var newImage = new Bitmap(origin.Width, origin.Height, PixelFormat.Format24bppRgb);
 
-            for (var y = 0; y < newImage.Height; y++)
+            for (var y = 0; y < origin.Height; y++)
             {
-                for (var x = 0; x < newImage.Width; x++)
+                for (var x = 0; x < origin.Width; x++)
                 {
-                    var total = newImage.GetPixel(x, y).R;
-                    // total = total < 127 ? (byte)0 : (byte)255;
+                    var total = origin.GetPixel(x, y).R;
+                    total = total < 191 ? (byte)0 : (byte)255;
                     newImage.SetPixel(x, y, Color.FromArgb(total, total, total));
                 }
             }
@@ -112,76 +112,96 @@ namespace Laba2_Klaster.ImageProcessing
             return newImage;
         }
 
-        public Bitmap CleanFromNoise(Bitmap source)
+        public Bitmap CleanFromNoise(Bitmap source, int count)
         {
+            if (count == 5) return source;
+
             var origin = new Bitmap(source.Width, source.Height, PixelFormat.Format24bppRgb);
 
-            for (var k = 0; k < 2; ++k)
+            for (var y = 0; y < source.Height; y += 2)
             {
-                for (var y = 0; y < origin.Height; y += 2)
+                for (var x = 0; x < source.Width; x += 2)
                 {
-                    for (var x = 0; x < origin.Width; x += 2)
+                    var pixel = source.GetPixel(x, y);
+                    if (pixel.R == 255)
                     {
-                        var pixel = origin.GetPixel(x, y);
-                        if (pixel.R == 255)
-                        {
-                            var topPixel = y - 1 < 0 ? Color.White.R : origin.GetPixel(x, y - 1).R;
-                            var rightPixel = x + 1 >= origin.Width ? Color.White.R : origin.GetPixel(x + 1, y).R;
-                            var bottomPixel = y + 1 >= origin.Height ? Color.White.R : origin.GetPixel(x, y + 1).R;
-                            var leftPixel = x - 1 < 0 ? Color.White.R : origin.GetPixel(x - 1, y).R;
+                        var topPixel = y - 1 < 0 ? Color.White.R : source.GetPixel(x, y - 1).R;
+                        var rightPixel = x + 1 >= origin.Width ? Color.White.R : source.GetPixel(x + 1, y).R;
+                        var bottomPixel = y + 1 >= origin.Height ? Color.White.R : source.GetPixel(x, y + 1).R;
+                        var leftPixel = x - 1 < 0 ? Color.White.R : source.GetPixel(x - 1, y).R;
 
-                            if (topPixel == 0 || rightPixel == 0 || bottomPixel == 0 || leftPixel == 0)
-                            {
-                                origin.SetPixel(x, y, Color.Black);
-                            }
+                        if (topPixel == 0 || rightPixel == 0 || bottomPixel == 0 || leftPixel == 0)
+                        {
+                            origin.SetPixel(x, y, Color.Black);
+                        } else
+                        {
+                            origin.SetPixel(x, y, Color.White);
                         }
                     }
                 }
             }
 
-            for (var k = 0; k < 2; ++k)
+            for (var y = 0; y < origin.Height; y += 2)
             {
-                for (var y = 0; y < origin.Height; y += 2)
+                for (var x = 0; x < origin.Width; x += 2)
                 {
-                    for (var x = 0; x < origin.Width; x += 2)
+                    var pixel = origin.GetPixel(x, y);
+                    if (pixel.R == 255)
                     {
-                        var pixel = origin.GetPixel(x, y);
-                        if (pixel.R == 255)
+                        if (y - 1 >= 0)
                         {
-                            if (y - 1 >= 0)
-                            {
-                                origin.SetPixel(x, y - 1, Color.White);
-                            }
-                            if (x + 1 < origin.Width)
-                            {
-                                origin.SetPixel(x + 1, y, Color.White);
-                            }
-                            if (y + 1 < origin.Height)
-                            {
-                                origin.SetPixel(x, y + 1, Color.White);
-                            }
-                            if (x - 1 >= origin.Width)
-                            {
-                                origin.SetPixel(x - 1, y, Color.White);
-                            }
+                            origin.SetPixel(x, y - 1, Color.White);
+                        }
+                        if (x + 1 < origin.Width)
+                        {
+                            origin.SetPixel(x + 1, y, Color.White);
+                        }
+                        if (y + 1 < origin.Height)
+                        {
+                            origin.SetPixel(x, y + 1, Color.White);
+                        }
+                        if (x - 1 >= origin.Width)
+                        {
+                            origin.SetPixel(x - 1, y, Color.White);
                         }
                     }
                 }
             }
 
-            return origin;
+            for (var y = 0; y < origin.Height; ++y)
+            {
+                for (var x = 1; x < origin.Width; x += 2)
+                {
+                    var pixel = origin.GetPixel(x, y).R;
+
+                    if (pixel == 0)
+                    {
+                        var leftPixel = x - 1 < 0 ? Color.Black.R : origin.GetPixel(x - 1, y).R;
+                        var rigthPixel = x + 1 >= origin.Width? Color.Black.R: origin.GetPixel(x + 1, y).R;
+
+                        if (leftPixel == 255 || rigthPixel == 255)
+                        {
+                            origin.SetPixel(x, y, Color.White);
+                        }
+                    }
+                }
+            }
+
+            return CleanFromNoise(origin, count + 1);
         }
 
-        public Bitmap MinMaxFilter(Bitmap origin)
+        public Bitmap MinMaxFilter(Bitmap origin, int power)
         {
             var newImage = new Bitmap(origin.Width, origin.Height, PixelFormat.Format24bppRgb);
-            newImage = this.FilterPart(origin, false);
-            newImage = this.FilterPart(newImage, false);
+            newImage = this.FilterPart(origin, true, 0, power);
+            newImage = this.FilterPart(newImage, false, 0, power);
             return newImage;
         }
 
-        private Bitmap FilterPart(Bitmap origin, bool isMin)
+        private Bitmap FilterPart(Bitmap origin, bool isMin, int count, int stopVal)
         {
+            if (count == stopVal) return origin;
+
             var baseColor = isMin ? Color.White : Color.Black;
             var newImage = new Bitmap(origin.Width, origin.Height, PixelFormat.Format24bppRgb);
             for (var y = 0; y < origin.Height; ++y)
@@ -190,13 +210,8 @@ namespace Laba2_Klaster.ImageProcessing
                 {
                     var pixelsUnderMask = new List<Color>
                     {
-                        x - 1 < 0 || y - 1 < 0 ? baseColor : origin.GetPixel(x - 1, y - 1),
-                        y - 1 < 0 ? baseColor : origin.GetPixel(x, y - 1),
-                        x + 1 >= origin.Width || y - 1 < 0 ? baseColor : origin.GetPixel(x + 1, y - 1),
-                        x - 1 < 0 ? baseColor : origin.GetPixel(x - 1, y),
                         origin.GetPixel(x, y),
                         x + 1 >= origin.Width ? baseColor : origin.GetPixel(x + 1, y),
-                        x - 1 < 0 || y + 1 >= origin.Height ? baseColor : origin.GetPixel(x - 1, y + 1),
                         y + 1 >= origin.Height ? baseColor : origin.GetPixel(x, y + 1),
                         x + 1 >= origin.Width || y + 1 >= origin.Height ? baseColor : origin.GetPixel(x + 1, y + 1)
                     };
@@ -207,7 +222,7 @@ namespace Laba2_Klaster.ImageProcessing
                 }
             }
 
-            return newImage;
+            return FilterPart(newImage, isMin, ++count, stopVal);
         }
     }
 }
