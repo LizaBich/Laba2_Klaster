@@ -47,8 +47,8 @@ namespace Laba2_Klaster
             changedImage = this._imageProcessor.CreateBitImage(changedImage);
             this.changedImageBox.Image = changedImage;
 
-            var filteredImage = this._imageProcessor.CleanFromNoise(changedImage, 0);
-            this.filteredImage.Image = filteredImage;
+            // var filteredImage = this._imageProcessor.CleanFromNoise(changedImage, 0);
+            //  this.filteredImage.Image = filteredImage;
         }
 
         private void LoadImage()

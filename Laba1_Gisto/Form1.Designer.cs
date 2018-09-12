@@ -41,6 +41,7 @@
             this.filteredImage = new System.Windows.Forms.PictureBox();
             this.filteredHisto = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.power = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.originalImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.changedImageBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.filteredImage)).BeginInit();
@@ -131,17 +132,28 @@
             // power
             // 
             this.power.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.power.Location = new System.Drawing.Point(672, 12);
+            this.power.Location = new System.Drawing.Point(906, 12);
             this.power.Name = "power";
             this.power.Size = new System.Drawing.Size(100, 34);
             this.power.TabIndex = 15;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(648, 15);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(258, 29);
+            this.label1.TabIndex = 16;
+            this.label1.Text = "Count of filter iterations";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(1507, 891);
+            this.ClientSize = new System.Drawing.Size(1528, 891);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.power);
             this.Controls.Add(this.filteredHisto);
             this.Controls.Add(this.filteredImage);
@@ -173,6 +185,7 @@
         private System.Windows.Forms.PictureBox filteredImage;
         private System.Windows.Forms.DataVisualization.Charting.Chart filteredHisto;
         private System.Windows.Forms.TextBox power;
+        private System.Windows.Forms.Label label1;
     }
 }
 

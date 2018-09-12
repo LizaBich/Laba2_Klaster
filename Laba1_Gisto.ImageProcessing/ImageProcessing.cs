@@ -9,6 +9,24 @@ namespace Laba2_Klaster.ImageProcessing
 {
     public class ImageProcessing
     {
+        public bool[,] ConvertToBoolMatrix(Bitmap source)
+        {
+            var result = new bool[source.Height, source.Width];
+            result.Initialize();
+
+            for (var y = 0; y < source.Height; ++y)
+            {
+                for (var x = 0; x < source.Width; ++x)
+                {
+                    var pixel = source.GetPixel(x, y);
+
+                    result[y, x] = pixel.R == 255;
+                }
+            }
+
+            return result;
+        }
+
         public IList<IDictionary<byte, int>> Calculate(Bitmap image)
         {
             var rGisto = new Dictionary<byte, int>();
