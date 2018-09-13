@@ -18,133 +18,12 @@ namespace Laba2_Klaster.Klasterization
             this._equalLabels = new List<List<int>>();
         }
 
-        public int[,] Labeling(bool[,] matrix)
-        {
-            this.currentLabel = 1;
-            this.labels = new int[matrix.GetLength(0), matrix.GetLength(1)];
-            labels.Initialize();
-
-            for (var j = 0; j < matrix.GetLength(0); ++j)
-            {
-                for (var i = 0; i < matrix.GetLength(1); ++i)
-                {
-                    if (matrix[j, i])
-                    {
-                        this.UpdateLabels(i, j);
-                    }
-                    else
-                    {
-                        labels[j, i] = 0;
-                    }
-                }
-            }
-
-            this.ResolveEquals();
-
-            return this.labels;
-        }
-
-        private void UpdateLabels(int x, int y)
-        {
-            if (x - 1 < 0 && y - 1 < 0)
-            {
-                this.labels[y, x] = this.currentLabel;
-            }
-            else if (x - 1 < 0)
-            {
-                this.labels[y, x] = this.labels[y - 1, x] != 0 ? 
-                    this.labels[y - 1, x] : 
-                    this.labels[y, x] = ++this.currentLabel;
-            }
-            else if (y - 1 < 0)
-            {
-                this.labels[y, x] = this.labels[y, x - 1] != 0 ?
-                    this.labels[y, x] = this.labels[y, x - 1] :
-                    this.labels[y, x] = ++this.currentLabel;
-            }
-            else
-            {
-                if (this.labels[y - 1, x] != 0 && this.labels[y, x - 1] != 0 && this.labels[y - 1, x] != this.labels[y, x - 1])
-                {
-                    this.labels[y, x] = this.labels[y - 1, x];
-                    if (this._equalLabels.Any(item => item.Contains(this.labels[y - 1, x])))
-                    {
-                        var index = this._equalLabels.IndexOf(this._equalLabels.First(item => item.Contains(this.labels[y - 1, x])));
-                        this._equalLabels[index].Add(this.labels[y, x - 1]);
-                    } else
-                    {
-                        this._equalLabels.Add(new List<int>() { this.labels[y - 1, x], this.labels[y, x - 1] });
-                    }
-                }
-                else if (this.labels[y - 1, x] != 0 && this.labels[y, x - 1] != 0 && this.labels[y - 1, x] == this.labels[y, x - 1])
-                {
-                    this.labels[y, x] = this.labels[y, x - 1];
-                }
-                else if (this.labels[y - 1, x] == 0 && this.labels[y, x - 1] != 0)
-                {
-                    this.labels[y, x] = this.labels[y, x - 1];
-                }
-                else if (this.labels[y - 1, x] != 0 && this.labels[y, x - 1] == 0)
-                {
-                    this.labels[y, x] = this.labels[y - 1, x];
-                }
-                else
-                {
-                    this.labels[y, x] = ++this.currentLabel;
-                }
-            }
-        }
-
-        public int Squere(int[,] source, int label)
-        {
-            return source.Cast<int>().Count(item => item == label);
-        }
-
-        public int Perimeter(int[,] source, int label)
-        {
-            if (this.tempBorders == null)
-            {
-                this.tempBorders = new int[source.GetLength(0), source.GetLength(1)];
-                this.tempBorders.Initialize();
-
-                for (var j = 0; j < source.GetLength(0); ++j)
-                {
-                    for (var i = 0; i < source.GetLength(1); ++i)
-                    {
-                        if (source[j, i] != 0)
-                        {
-                            if (j - 1 < 0 ||
-                                i - 1 < 0 ||
-                                j + 1 >= source.GetLength(0) ||
-                                i + 1 >= source.GetLength(1) ||
-                                source[j - 1, i] == 0 ||
-                                source[j, i + 1] == 0 ||
-                                source[j + 1, i] == 0 ||
-                                source[j, i - 1] == 0)
-                            {
-                                this.tempBorders[j, i] = source[j, i];
-                            }
-                            else
-                            {
-                                this.tempBorders[j, i] = 0;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return this.Squere(this.tempBorders, label);
-        }
-
-        public double Compactness(float squere, float perimeter)
-        {
-            return Math.Pow(perimeter, 2) / squere;
-        }
-
-        public IList<PropertiesOfObject> CreateListOfObjects(int[,] source)
+        public IList<PropertiesOfObject> CreateListOfObjects(bool[,] originMatrix)
         {
             var unicumLabels = new List<int>();
             var listOfObjects = new List<PropertiesOfObject>();
+
+            var source = this.Labeling(originMatrix);
 
             for (var y = 0; y < source.GetLength(0); ++y)
             {
@@ -170,13 +49,7 @@ namespace Laba2_Klaster.Klasterization
             return listOfObjects;
         }
 
-        public async Task<List<List<PropertiesOfObject>>> DivideOnKlastersAsync(int countOfClasters, IList<PropertiesOfObject> vectors)
-        {
-            var result = await this.CreateKlastersAsync(countOfClasters, vectors);
-            return result;
-        }
-
-        private Task<List<List<PropertiesOfObject>>> CreateKlastersAsync(int countOfClasters, IList<PropertiesOfObject> vectors)
+        public List<List<PropertiesOfObject>> DivideOnKlastersAsync(int countOfClasters, IList<PropertiesOfObject> vectors)
         {
             return Task.Run(() =>
             {
@@ -184,8 +57,8 @@ namespace Laba2_Klaster.Klasterization
                 this.Initialize(ref klasters);
                 IEnumerable<PropertiesOfObject> medoids = null;
                 var listOfDistances = new List<IList<double>>();
-                double minSum = 1;
-                var iterations = countOfClasters * vectors.Count;
+                double minSum = double.MaxValue;
+                var iterations = Math.Pow(countOfClasters, vectors.Count);
 
                 for (var i = 0; i < iterations; ++i)
                 {
@@ -211,7 +84,18 @@ namespace Laba2_Klaster.Klasterization
                 }
 
                 return klasters.Cast<List<PropertiesOfObject>>().ToList();
-            });
+            }).Result;
+        }
+
+        public void Clear()
+        {
+            foreach(var item in this._equalLabels)
+            {
+                item.Clear();
+            }
+            this._equalLabels.Clear();
+
+            this.currentLabel = 0;
         }
 
         private void Initialize(ref IList<PropertiesOfObject>[] source)
@@ -252,6 +136,32 @@ namespace Laba2_Klaster.Klasterization
             return medoids;
         }
 
+        private int[,] Labeling(bool[,] matrix)
+        {
+            this.currentLabel = 1;
+            this.labels = new int[matrix.GetLength(0), matrix.GetLength(1)];
+            labels.Initialize();
+
+            for (var j = 0; j < matrix.GetLength(0); ++j)
+            {
+                for (var i = 0; i < matrix.GetLength(1); ++i)
+                {
+                    if (matrix[j, i])
+                    {
+                        this.UpdateLabels(i, j);
+                    }
+                    else
+                    {
+                        labels[j, i] = 0;
+                    }
+                }
+            }
+
+            this.ResolveEquals();
+
+            return this.labels;
+        }
+
         private void ResolveEquals()
         {
             this._equalLabels = this._equalLabels.Select(item => item.Distinct().ToList()).ToList();
@@ -268,39 +178,102 @@ namespace Laba2_Klaster.Klasterization
             }
         }
 
-        public List<List<PropertiesOfObject>> Custom(int countOfClasters, IList<PropertiesOfObject> vectors)
+        private void UpdateLabels(int x, int y)
         {
-            var klasters = new IList<PropertiesOfObject>[countOfClasters];
-            this.Initialize(ref klasters);
-            IEnumerable<PropertiesOfObject> medoids = null;
-            var listOfDistances = new List<IList<double>>();
-            double minSum = 1;
-            var iterations = countOfClasters * vectors.Count;
-
-            for (var i = 0; i < iterations; ++i)
+            if (x - 1 < 0 && y - 1 < 0)
             {
-                listOfDistances.Clear();
-                medoids = this.ChooseMedoids(countOfClasters, vectors.Count() - 1, vectors);
-
-                foreach (var item in vectors)
+                this.labels[y, x] = this.currentLabel;
+            }
+            else if (x - 1 < 0)
+            {
+                this.labels[y, x] = this.labels[y - 1, x] != 0 ?
+                    this.labels[y - 1, x] :
+                    this.labels[y, x] = ++this.currentLabel;
+            }
+            else if (y - 1 < 0)
+            {
+                this.labels[y, x] = this.labels[y, x - 1] != 0 ?
+                    this.labels[y, x] = this.labels[y, x - 1] :
+                    this.labels[y, x] = ++this.currentLabel;
+            }
+            else
+            {
+                if (this.labels[y - 1, x] != 0 && this.labels[y, x - 1] != 0 && this.labels[y - 1, x] != this.labels[y, x - 1])
                 {
-                    listOfDistances.Add(medoids.Select(med => this.CalculateDistance(item, med)).ToList());
-                }
-
-                var sum = listOfDistances.Select(item => item.Min()).Sum();
-                if (sum < minSum)
-                {
-                    this.Initialize(ref klasters);
-                    minSum = sum;
-                    foreach (var distances in listOfDistances)
+                    this.labels[y, x] = this.labels[y - 1, x];
+                    if (this._equalLabels.Any(item => item.Contains(this.labels[y - 1, x])))
                     {
-                        var indexOfKlaster = distances.IndexOf(distances.Min());
-                        klasters[indexOfKlaster].Add(vectors[listOfDistances.IndexOf(distances)]);
+                        var index = this._equalLabels.IndexOf(this._equalLabels.First(item => item.Contains(this.labels[y - 1, x])));
+                        this._equalLabels[index].Add(this.labels[y, x - 1]);
+                    }
+                    else
+                    {
+                        this._equalLabels.Add(new List<int>() { this.labels[y - 1, x], this.labels[y, x - 1] });
+                    }
+                }
+                else if (this.labels[y - 1, x] != 0 && this.labels[y, x - 1] != 0 && this.labels[y - 1, x] == this.labels[y, x - 1])
+                {
+                    this.labels[y, x] = this.labels[y, x - 1];
+                }
+                else if (this.labels[y - 1, x] == 0 && this.labels[y, x - 1] != 0)
+                {
+                    this.labels[y, x] = this.labels[y, x - 1];
+                }
+                else if (this.labels[y - 1, x] != 0 && this.labels[y, x - 1] == 0)
+                {
+                    this.labels[y, x] = this.labels[y - 1, x];
+                }
+                else
+                {
+                    this.labels[y, x] = ++this.currentLabel;
+                }
+            }
+        }
+
+        private int Squere(int[,] source, int label)
+        {
+            return source.Cast<int>().Count(item => item == label);
+        }
+
+        private int Perimeter(int[,] source, int label)
+        {
+            if (this.tempBorders == null)
+            {
+                this.tempBorders = new int[source.GetLength(0), source.GetLength(1)];
+                this.tempBorders.Initialize();
+
+                for (var j = 0; j < source.GetLength(0); ++j)
+                {
+                    for (var i = 0; i < source.GetLength(1); ++i)
+                    {
+                        if (source[j, i] != 0)
+                        {
+                            if (j - 1 < 0 ||
+                                i - 1 < 0 ||
+                                j + 1 >= source.GetLength(0) ||
+                                i + 1 >= source.GetLength(1) ||
+                                source[j - 1, i] == 0 ||
+                                source[j, i + 1] == 0 ||
+                                source[j + 1, i] == 0 ||
+                                source[j, i - 1] == 0)
+                            {
+                                this.tempBorders[j, i] = source[j, i];
+                            }
+                            else
+                            {
+                                this.tempBorders[j, i] = 0;
+                            }
+                        }
                     }
                 }
             }
 
-            return klasters.Cast<List<PropertiesOfObject>>().ToList();
+            return this.Squere(this.tempBorders, label);
+        }
+
+        private double Compactness(float squere, float perimeter)
+        {
+            return Math.Pow(perimeter, 2) / squere;
         }
     }
 }

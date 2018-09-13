@@ -11,9 +11,9 @@ namespace Laba2_Klaster.Klasterization
         public PropertiesOfObject(double squere, double perimeter, double compactness)
         {
             var delimeter = squere + perimeter + compactness;
-            this.NormalizedSquere = squere / delimeter;
-            this.NormalizedPerimeter = perimeter / delimeter;
-            this.NormalizedCompactness = compactness / delimeter;
+            this.NormalizedSquere = squere/* / delimeter*/;
+            this.NormalizedPerimeter = perimeter/* / delimeter*/;
+            this.NormalizedCompactness = compactness/* / delimeter*/;
         }
 
         public double NormalizedSquere { get; private set; }

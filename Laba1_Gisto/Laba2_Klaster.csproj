@@ -91,6 +91,10 @@
       <Project>{27d4890c-6043-45f2-b015-0fe746379368}</Project>
       <Name>Laba2_Klaster.ImageProcessing</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Laba2_Klaster.Klasterization\Laba2_Klaster.Klasterization.csproj">
+      <Project>{f446875b-6eec-4c16-b585-1d4593cc7c6b}</Project>
+      <Name>Laba2_Klaster.Klasterization</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

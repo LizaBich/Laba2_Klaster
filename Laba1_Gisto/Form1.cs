@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Laba2_Klaster.Klasterization;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -13,12 +14,14 @@ namespace Laba2_Klaster
         private Bitmap _image;
 
         private readonly ImageProcessing.ImageProcessing _imageProcessor;
+        private readonly KlasterProcessing _klasterization;
 
         public Form1()
         {
             InitializeComponent();
 
             this._imageProcessor = new ImageProcessing.ImageProcessing();
+            this._klasterization = new KlasterProcessing();
         }
 
         private void browseButton_Click(object sender, EventArgs e)
@@ -39,16 +42,24 @@ namespace Laba2_Klaster
             }
         }
 
-        private void processButton_Click(object sender, EventArgs e)
+        private void filterButton_Click(object sender, EventArgs e)
         {
             var p = power.Text == string.Empty ? 4 : Convert.ToInt32(power.Text);
             var changedImage = this._imageProcessor.ConvertToShadowsOfGray(this._image);
             changedImage = this._imageProcessor.MinMaxFilter(changedImage, p);
             changedImage = this._imageProcessor.CreateBitImage(changedImage);
             this.changedImageBox.Image = changedImage;
+            this._image = changedImage;
+        }
 
-            // var filteredImage = this._imageProcessor.CleanFromNoise(changedImage, 0);
-            //  this.filteredImage.Image = filteredImage;
+        private void klasterButton_Click(object sender, EventArgs e)
+        {
+            this.Status.Text = "Data is processed...";
+            var count = Convert.ToInt32(this.CountOfClasters.Text);
+            var labels = this._klasterization.CreateListOfObjects(this._imageProcessor.ConvertToBoolMatrix(this._image));
+            var klasters = this._klasterization.DivideOnKlastersAsync(count, labels);
+            this.RenderResults(klasters);
+            this.Status.Text = "Data processed successfully.";
         }
 
         private void LoadImage()
@@ -58,35 +69,14 @@ namespace Laba2_Klaster
             this.originalImage.Image = (Image)this._image;
         }
 
-        private void DrawHisto(IList<IDictionary<byte, int>> histos, Chart chart)
+        private void RenderResults(List<List<PropertiesOfObject>> klasters)
         {
-            for (var i = 0; i < 256; i++)
-            {
-                if (histos[0].Keys.Contains((byte)i))
-                {
-                    chart.Series["R"].Points.AddXY(i, histos[0][(byte)i]);
-                }
-                else
-                {
-                    chart.Series["R"].Points.AddXY(i, 0);
-                }
-                if (histos[1].Keys.Contains((byte)i))
-                {
-                    chart.Series["G"].Points.AddXY(i, histos[1][(byte)i]);
-                }
-                else
-                {
-                    chart.Series["G"].Points.AddXY(i, 0);
-                }
-                if (histos[2].Keys.Contains((byte)i))
-                {
-                    chart.Series["B"].Points.AddXY(i, histos[2][(byte)i]);
-                }
-                else
-                {
-                    chart.Series["B"].Points.AddXY(i, 0);
-                }
-            }
+            var count = klasters.Count;
+            this.CountOfElems0.Text = count >= 1 ? $"Items: {klasters[0].Count}" : $"Items: {string.Empty}";
+            this.CountOfElems1.Text = count >= 2 ? $"Items: {klasters[1].Count}" : $"Items: {string.Empty}";
+            this.CountOfElems2.Text = count >= 3 ? $"Items: {klasters[2].Count}" : $"Items: {string.Empty}";
+            this.CountOfElems3.Text = count >= 4 ? $"Items: {klasters[3].Count}" : $"Items: {string.Empty}";
+            this.CountOfElems4.Text = count >= 5 ? $"Items: {klasters[4].Count}" : $"Items: {string.Empty}";
         }
     }
 }
