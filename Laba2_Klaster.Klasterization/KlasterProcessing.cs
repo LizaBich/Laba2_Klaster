@@ -59,6 +59,7 @@ namespace Laba2_Klaster.Klasterization
                 var listOfDistances = new List<IList<double>>();
                 double minSum = double.MaxValue;
                 var iterations = Math.Pow(countOfClasters, vectors.Count);
+                iterations = iterations > 500 ? 500 : iterations;
 
                 for (var i = 0; i < iterations; ++i)
                 {
